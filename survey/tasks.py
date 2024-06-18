@@ -10,4 +10,5 @@ logger = get_task_logger(__name__)
 @shared_task
 def sample_task():
     one_hour_ago = timezone.now() - timedelta(hours=1)
-    Survey.objects.filter(date__lte=one_hour_ago, is_archive=False).update(is_archive=False)
+    # TODO:: We Can Use Bulk Update!
+    Survey.objects.filter(created_at__lte=one_hour_ago, is_archive=False).update(is_archive=False)
