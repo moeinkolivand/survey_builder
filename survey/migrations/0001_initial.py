@@ -3,16 +3,17 @@
 import django.contrib.postgres.fields.hstore
 import django.db.models.deletion
 from django.db import migrations, models
+from django.contrib.postgres.operations import HStoreExtension
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
     ]
 
     operations = [
+        HStoreExtension(),
         migrations.CreateModel(
             name='Question',
             fields=[
@@ -20,7 +21,10 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('text', models.CharField(max_length=255, verbose_name='text')),
-                ('question_type', models.CharField(choices=[('text', 'TEXT'), ('multiple_choice', 'MULTIPLE_CHOICE'), ('rating', 'RATING'), ('contact_information', 'CONTACT_INFORMATION')], max_length=20, verbose_name='question_type')),
+                ('question_type', models.CharField(
+                    choices=[('text', 'TEXT'), ('multiple_choice', 'MULTIPLE_CHOICE'), ('rating', 'RATING'),
+                             ('contact_information', 'CONTACT_INFORMATION')], max_length=20,
+                    verbose_name='question_type')),
                 ('order', models.IntegerField(verbose_name='order')),
                 ('validation_rules', models.JSONField(blank=True, default=dict, verbose_name='validations')),
                 ('data', models.JSONField(verbose_name='question data')),
@@ -55,8 +59,10 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('user', models.IntegerField(default=1)),
-                ('user_answer', django.contrib.postgres.fields.hstore.HStoreField(default=dict, verbose_name='user answer')),
-                ('question', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.question', verbose_name='question')),
+                ('user_answer',
+                 django.contrib.postgres.fields.hstore.HStoreField(default=dict, verbose_name='user answer')),
+                ('question', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.question',
+                                               verbose_name='question')),
             ],
             options={
                 'verbose_name': 'answers',
@@ -67,6 +73,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='question',
             name='survey',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.survey', verbose_name='survey'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survey.survey',
+                                    verbose_name='survey'),
         ),
     ]
