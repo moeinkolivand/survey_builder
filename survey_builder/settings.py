@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
 from pathlib import Path
+
+from celery.schedules import crontab
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -136,3 +138,13 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CELERY_BROKER_URL = "redis://redis:6379/0"
+CELERY_RESULT_BACKEND = "redis://redis:6379/0"
+
+CELERY_BEAT_SCHEDULE = {
+    "sample_task": {
+        "task": "survey.tasks.sample_task",
+        "schedule": crontab(minute="*/15"),
+    },
+}
