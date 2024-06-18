@@ -11,7 +11,8 @@
 
 ### Authentican And Authorization Is Not Implemented
 
-### For Answering Question Send A Random Id 
+### For Answering Question Send A Random Number (Example Response Is Available On Postman Collection)  
 
 ### PostMan Collection Is On The Root Of Project
+
 
