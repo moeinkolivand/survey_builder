@@ -52,6 +52,8 @@ class AnswerApiView(ListCreateAPIView):
             raise ValidationError({'error': 'Answers Not Send Completely'})
         for data in request.data['answers']:
             question = get_object_or_404(Question, pk=data.get('question', None))
+            if question.survey != survey:
+                raise ValidationError({'error': 'Question Doesnt Belong To This Survey'})
             serializer = answer_create_serializer_factory(QuestionTypes(question.question_type))
             serializer(data=data).is_valid(raise_exception=True)
             answer_data.append(
