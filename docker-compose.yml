@@ -2,7 +2,7 @@ version: '3'
 
 services:
   db:
-    image: focker.ir/postgres
+    image: postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
@@ -29,6 +29,37 @@ services:
       - .env
     depends_on:
       - db
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  celery-worker:
+    build:
+      context: .
+    command: celery -A survey_builder worker -l info
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - db
+
+  celery-beat:
+    build:
+      context: .
+    command: celery -A survey_builder beat -l info
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - db
+
 
 volumes:
   postgres_data:
