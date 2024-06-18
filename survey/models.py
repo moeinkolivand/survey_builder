@@ -32,7 +32,7 @@ class Question(BaseTimeModel):
     order = models.IntegerField(verbose_name=_("order"))
     validation_rules = models.JSONField(default=dict, blank=True,
                                         verbose_name=_("validations"))  # Store validation rules as JSON
-    data = models.JSONField(verbose_name=_("question data"))
+    data = models.JSONField(verbose_name=_("question data"), blank=True, default=dict)
     media = models.ImageField(blank=True, upload_to='question_media/',
                               verbose_name=_("media"))  # Optional media background
 
