@@ -10,7 +10,7 @@ from utils.pagination import CustomPageNumberPagination
 
 
 class ListCreateSurveyApiView(ListCreateAPIView):
-    queryset = Survey.objects.select_related("question").all()
+    queryset = Survey.objects.all()
     serializer_class = SurveySerializer
     pagination_class = CustomPageNumberPagination
     # permission_classes = (IsAuthenticated,)
@@ -18,15 +18,14 @@ class ListCreateSurveyApiView(ListCreateAPIView):
 
 
 class ListCreateQuestionApiView(ListCreateAPIView):
-    queryset = Question.objects.all()
     serializer_class = QuestionSerializer
-
+    pagination_class = CustomPageNumberPagination
     # permission_classes = (IsAuthenticated, EditPermission)
     # authentication_classes = (JWTAuthentication,)
 
     def get_queryset(self):
         survey = get_object_or_404(Survey, pk=self.request.query_params.get('survey', None))
-        return Question.objects.filter(survey=survey)
+        return Question.objects.filter(survey=survey).order_by("order")
 
 
 class AnswerApiView(ListCreateAPIView):

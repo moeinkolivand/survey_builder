@@ -33,28 +33,26 @@ class QuestionSerializer(serializers.ModelSerializer):
         ]
 
     def validate(self, data):
-        super(QuestionSerializer, self).validate(data)
-        if Question.objects.filter(order=data['order']).exists():
+        if Question.objects.filter(order=data['order'], survey=data['survey']).exists():
             raise serializers.ValidationError(
                 {"order": "question with this order is already exists, updating exists order is not supported yet"})
-        keyword_arguments = dict()
-        if QuestionTypes(data['question_type']) == QuestionTypes.MULTIPLE_CHOICE:
-            if data['data'].get('choices', None) is None:
-                raise serializers.ValidationError({"choices": "No choices provided"})
-            keyword_arguments.update({'many': True, 'data': data['data']['choices']})
-        else:
-            keyword_arguments.update({'data': data['data']})
-        serializer = question_create_serializer_factory(QuestionTypes(data['question_type']))(**keyword_arguments)
-        serializer.is_valid(raise_exception=True)
+        if data.get("data", None) is not None:
+            keyword_arguments = dict()
+            if QuestionTypes(data['question_type']) == QuestionTypes.MULTIPLE_CHOICE:
+                if data['data'].get('choices', None) is None:
+                    raise serializers.ValidationError({"choices": "No choices provided"})
+                keyword_arguments.update({'many': True, 'data': data['data']['choices']})
+            else:
+                keyword_arguments.update({'data': data['data']})
+            serializer = question_create_serializer_factory(QuestionTypes(data['question_type']))(**keyword_arguments)
+            serializer.is_valid(raise_exception=True)
         return data
 
 
 class SurveySerializer(serializers.ModelSerializer):
-    questions = QuestionSerializer(many=True, read_only=True)
-
     class Meta:
         model = Survey
-        fields = ['id', 'title', 'description', 'questions']
+        fields = ['id', 'title', 'description']
 
 
 def question_create_serializer_factory(choice_type: QuestionTypes) -> Type[serializers.Serializer]:
